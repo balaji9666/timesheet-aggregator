@@ -22,7 +22,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["node", "express"],
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
