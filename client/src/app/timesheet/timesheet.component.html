@@ -1,0 +1,125 @@
+<app-header></app-header>
+<app-loading-screen [show]="isLoading()"></app-loading-screen>
+<div class="view-controls">
+  <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+    <span>Project Name: <span style="font-weight: bold;">WAKA</span></span>
+    <span>Timesheet Period: 
+      <select 
+        [value]="selectedPeriod()" 
+        (change)="onPeriodChange($any($event.target).value)"
+        class="period-select"
+      >
+        @for (period of availablePeriods(); track period.value) {
+          <option [value]="period.value">{{ period.label }}</option>
+        }
+      </select>
+    </span>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button (click)="setViewMode('original')" [class.active]="viewMode() === 'original'">Original View</button>
+    <button (click)="setViewMode('byTask')" [class.active]="viewMode() === 'byTask'">Group by Task</button>
+    <button (click)="setViewMode('byWeek')" [class.active]="viewMode() === 'byWeek'">Group by Week</button>
+    <button (click)="exportToExcel()" class="export-button"> Export to Excel </button>
+    <button (click)="exportToGoogleSheets()" class="export-button google">
+      Export to Google Sheets
+    </button>
+  </div>
+</div>
+<div class="timesheet-container">
+  @if (timesheetData$ | async; as data) {
+    @if (viewMode() === 'original') {
+      <table class="timesheet-table">
+        <thead>
+          <tr>
+            <th>MODULE</th>
+            <th>FEATURE</th>
+            <th>DEV/TEST ACTIVITIES</th>
+            <th>ACTUAL HOURS</th>
+            <th>DATE STARTED</th>
+            <th>DATE COMPLETED</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of data.original; track entry.suggestion_name + entry.task_name + entry.date_of_status) {
+            <tr>
+              <td>{{ entry.suggestion_name }}</td>
+              <td>{{ entry.task_name }}</td>
+              <td>{{ entry.remarks }}</td>
+              <td>{{ entry.hs }}</td>
+              <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+              <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (viewMode() === 'byTask') {
+      <div class="grouped-view">
+        @for (task of getTaskEntries(data); track task[0]) {
+          <div class="group-section">
+            <h3>{{ task[0] }} (Total Hours: {{ task[1].totalHours | number:'1.2-2' }})</h3>
+            <table class="timesheet-table">
+              <thead>
+                <tr>
+                  <th>MODULE</th>
+                  <th>FEATURE</th>
+                  <th>DEV/TEST ACTIVITIES</th>
+                  <th>ACTUAL HOURS</th>
+                  <th>DATE STARTED</th>
+                  <th>DATE COMPLETED</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of task[1].entries; track entry.suggestion_name + entry.date_of_status) {
+                  <tr>
+                    <td>{{ entry.suggestion_name }}</td>
+                    <td>{{ entry.task_name }}</td>
+                    <td>{{ entry.remarks }}</td>
+                    <td>{{ entry.hs }}</td>
+                    <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    @if (viewMode() === 'byWeek') {
+      <div class="grouped-view">
+        @for (week of getWeekEntries(data); track week[0]) {
+          <div class="group-section">
+            <h3>{{ week[0] }} (Total Hours: {{ week[1].totalHours | number:'1.2-2' }})</h3>
+            <table class="timesheet-table">
+              <thead>
+                <tr>
+                  <th>MODULE</th>
+                  <th>FEATURE</th>
+                  <th>DEV/TEST ACTIVITIES</th>
+                  <th>ACTUAL HOURS</th>
+                  <th>DATE STARTED</th>
+                  <th>DATE COMPLETED</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of week[1].entries; track entry.suggestion_name + entry.task_name + entry.date_of_status) {
+                  <tr>
+                    <td>{{ entry.suggestion_name }}</td>
+                    <td>{{ entry.task_name }}</td>
+                    <td>{{ entry.remarks }}</td>
+                    <td>{{ entry.hs }}</td>
+                    <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

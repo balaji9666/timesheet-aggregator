@@ -1,0 +1,140 @@
+.timesheet-container {
+  padding-top: 80px;
+  padding: 20px 20px 20px;
+  max-width: 88%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: calc(100vh - 140px);;
+  overflow-y: auto;
+}
+
+.view-controls {
+  background-color: #f8f9fa;
+  padding: 70px 20px 10px 20px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.view-controls button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.view-controls button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.period-select {
+  padding: 6px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.period-select:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.timesheet-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+
+.timesheet-table th {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.timesheet-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  color: #212529;
+}
+
+.timesheet-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.timesheet-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .timesheet-container {
+    padding: 1rem;
+  }
+  
+  .timesheet-table {
+    font-size: 0.8rem;
+  }
+  
+  .timesheet-table th,
+  .timesheet-table td {
+    padding: 0.75rem;
+  }
+}
+
+.grouped-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.group-section {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  background: #f8f9fa;
+}
+
+.group-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.1em;
+}
+
+.export-button {
+  color: black;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.export-button:hover {
+  background-color: #45a049 !important;
+  color: white !important;
+}
+
+.export-button.google {
+  background-color: #0F9D58;
+  margin-left: 8px;
+}
+
+.export-button.google:hover {
+  background-color: #0B8043;
+}
