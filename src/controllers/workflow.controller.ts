@@ -1,28 +1,48 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import crypto from 'crypto';
 
-const crypto = require('crypto');
-const ENCRYPTION_KEY = '5c88acf79eecbc7841@ar$tyudchtd^h'; 
+const ENCRYPTION_KEY = '5c88acf79eecbc7841@ar$tyudchtd^h';
+
+interface TaskEntry {
+  task_name: string;
+  hs: string;
+  cp: string;
+  date_of_status: string;
+  // Add other properties as needed
+}
+
+interface GroupedData {
+  totalHours: number;
+  totalCP: number;
+  entries: TaskEntry[];
+}
+
+interface GroupedByTask {
+  [key: string]: GroupedData;
+}
+
+interface GroupedByWeek {
+  [key: string]: GroupedData;
+}
 
 export class WorkflowController {
 
   constructor() {
   }
 
-  decrypt(text:any) {
-    let textParts = text.split(':');
-    let iv = Buffer.from(textParts.shift(), 'hex');
-    let encryptedText = Buffer.from(textParts.join(":"), 'hex');
-    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  private decrypt(text: string): string {
+    const textParts = text.split(':');
+    const iv = Buffer.from(textParts.shift() || '', 'hex');
+    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   }
 
-
   async workflowLogin(req: Request, res: Response) {
     try {
-
       const authData = req.body;
 
       const response = await axios.post('https://workflow.appedo.com:4040/workflow/login', authData);
