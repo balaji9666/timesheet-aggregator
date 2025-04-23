@@ -3,9 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
 import workflowRoutes from './routes/workflow.routes';
 
 // Load environment variables
@@ -15,23 +12,39 @@ dotenv.config();
 const app: Express = express();
 const port: number = parseInt(process.env.PORT || '3000', 10);
 
-// SSL Certificate configuration
-const sslOptions = {
-  key: fs.readFileSync(path.join(__dirname, '../certs/private.key')),
-  cert: fs.readFileSync(path.join(__dirname, '../certs/certificate.crt'))
-};
-
 // Middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+  // Configure helmet for cloud environment
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://*.render.com", "https://*.amazonaws.com"]
+    }
+  }
+}));
+
+// Enable CORS with proper configuration for cloud environment
 app.use(cors({
-  origin: ['http://localhost:4200', 'https://timesheet-aggregator-eind.onrender.com', 'timesheet-aggregator-eind.onrender.com'],
+  origin: [
+    'http://localhost:4200',
+    'https://timesheet-aggregator-eind.onrender.com',
+    'https://*.render.com',
+    'https://*.amazonaws.com'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false
-})); // Enable CORS
-app.use(morgan('dev')); // Logging  
+  credentials: true
+}));
+
+app.use(morgan('dev')); // Logging
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+// Trust proxy headers (important for cloud environment)
+app.set('trust proxy', 1);
 
 // Routes
 app.use('/api/workflow', workflowRoutes);
@@ -64,11 +77,8 @@ app.use((_req: Request, res: Response) => {
   });
 });
 
-// Create HTTPS server
-const httpsServer = https.createServer(sslOptions, app);
-
 // Start server
-httpsServer.listen(port, () => {
-  console.log(`Workflow Timesheet Aggregator API is running securely on port ${port}`);
+app.listen(port, () => {
+  console.log(`Workflow Timesheet Aggregator API is running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
 }); 
