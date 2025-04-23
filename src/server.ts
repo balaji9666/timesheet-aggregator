@@ -10,7 +10,7 @@ dotenv.config();
 
 // Create Express app
 const app: Express = express();
-const port: number = parseInt(process.env.PORT || '3000', 10);
+const port: number = parseInt(process.env.PORT || '443', 10);
 
 // Middleware
 app.use(helmet({
