@@ -18,7 +18,7 @@ app.use(cors({
   origin: ['http://localhost:4200', 'https://timesheet-aggregator-eind.onrender.com', 'timesheet-aggregator-eind.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: false
 })); // Enable CORS
 app.use(morgan('dev')); // Logging  
 app.use(express.json()); // Parse JSON bodies
