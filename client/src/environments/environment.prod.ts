@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   apiUrl: 'http://16.170.220.172:3000/api',
   keyEncryptDecrypt: '5c88acf79eecbc7841@ar$tyudchtd^h',
   googleCredentialsPath: 'path/to/your/credentials.json',
