@@ -3,6 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
 import workflowRoutes from './routes/workflow.routes';
 
 // Load environment variables
@@ -11,6 +14,12 @@ dotenv.config();
 // Create Express app
 const app: Express = express();
 const port: number = parseInt(process.env.PORT || '3000', 10);
+
+// SSL Certificate configuration
+const sslOptions = {
+  key: fs.readFileSync(path.join(__dirname, '../certs/private.key')),
+  cert: fs.readFileSync(path.join(__dirname, '../certs/certificate.crt'))
+};
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -55,8 +64,11 @@ app.use((_req: Request, res: Response) => {
   });
 });
 
+// Create HTTPS server
+const httpsServer = https.createServer(sslOptions, app);
+
 // Start server
-app.listen(port, () => {
-  console.log(`Workflow Timesheet Aggregator API is running on port ${port}`);
+httpsServer.listen(port, () => {
+  console.log(`Workflow Timesheet Aggregator API is running securely on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
 }); 
