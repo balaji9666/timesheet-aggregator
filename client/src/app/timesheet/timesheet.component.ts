@@ -140,8 +140,8 @@ export class TimesheetComponent implements OnInit {
                 entry.task_name,
                 entry.remarks,
                 entry.hs,
-                new Date(entry.date_of_status).toLocaleDateString(),
-                new Date(entry.date_of_status).toLocaleDateString()
+                new Date(entry.date_started).toLocaleDateString(),
+                new Date(entry.date_completed).toLocaleDateString()
               ]);
             });
             exportData.push([]);
