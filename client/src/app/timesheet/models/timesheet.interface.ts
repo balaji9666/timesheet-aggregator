@@ -6,6 +6,8 @@ export interface WorkflowEntry {
   remarks: string;
   cp: number;
   hs: string;
+  date_started: string;
+  date_completed: string;
 }
 
 export interface GroupedTask {

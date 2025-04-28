@@ -111,8 +111,8 @@
                     <td>{{ entry.task_name }}</td>
                     <td>{{ entry.remarks }}</td>
                     <td>{{ entry.hs }}</td>
-                    <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
-                    <td>{{ entry.date_of_status | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ entry?.date_started | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ entry?.date_completed | date:'dd-MM-yyyy' }}</td>
                   </tr>
                 }
               </tbody>

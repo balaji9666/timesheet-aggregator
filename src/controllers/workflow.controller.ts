@@ -130,22 +130,54 @@ export class WorkflowController {
             entries: []
           };
         }
+
+        // Find if an entry with same suggestion_name, task_name, and remarks exists
+        const existingEntry = acc[weekKey].entries.find((entry: any) => 
+          entry.suggestion_name.trim() === item.suggestion_name.trim() && 
+          entry.task_name.trim() === item.task_name.trim() && 
+          entry.remarks.trim() === item.remarks.trim()
+        );
+
+        if (existingEntry) {
+          // Update existing entry's hs value
+          existingEntry.hs = (parseFloat(existingEntry.hs) + parseFloat(item.hs)).toString();
+          existingEntry.cp = (parseFloat(existingEntry.cp) + parseFloat(item.cp)).toString();
+          
+          // Update date range
+          const currentCreatedOn = new Date(item.created_on);
+          const existingStartDate = new Date(existingEntry['date_started']);
+          const existingEndDate = new Date(existingEntry['date_completed']);
+          
+          existingEntry['date_started'] = currentCreatedOn < existingStartDate ? item.created_on : existingEntry['date_started'];
+          existingEntry['date_completed'] = currentCreatedOn > existingEndDate ? item.created_on : existingEntry['date_completed'];
+        } else {
+          // Add new entry with initial date range
+          const newEntry = {
+            ...item,
+            'date_started': item.created_on,
+            'date_completed': item.created_on
+          };
+          acc[weekKey].entries.push(newEntry);
+        }
+
         acc[weekKey].totalHours += parseFloat(item.hs);
         acc[weekKey].totalCP += parseFloat(item.cp);
-        acc[weekKey].entries.push(item);
         return acc;
       }, {});
 
-      // Sort entries within each week by task_name and date_of_status
+      // Sort entries within each week
       Object.keys(groupedByWeek).forEach(weekKey => {
         groupedByWeek[weekKey].entries.sort((a: any, b: any) => {
-          // First sort by task_name
-          const taskNameComparison = a.task_name.localeCompare(b.task_name);
-          if (taskNameComparison !== 0) {
-            return taskNameComparison;
-          }
-          // If task names are equal, sort by date_of_status
-          return new Date(a.date_of_status).getTime() - new Date(b.date_of_status).getTime();
+          // First sort by suggestion_name
+          const suggestionCompare = a.suggestion_name.trim().localeCompare(b.suggestion_name.trim());
+          if (suggestionCompare !== 0) return suggestionCompare;
+
+          // Then by task_name
+          const taskCompare = a.task_name.trim().localeCompare(b.task_name.trim());
+          if (taskCompare !== 0) return taskCompare;
+
+          // Finally by remarks
+          return a.remarks.trim().localeCompare(b.remarks.trim());
         });
       });
 

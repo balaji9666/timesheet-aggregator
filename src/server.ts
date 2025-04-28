@@ -21,7 +21,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://*.render.com", "https://*.amazonaws.com"]
+      connectSrc: ["'self'", "https://*.render.com", "https://*.amazonaws.com", "http://localhost:5200"]
     }
   }
 }));
@@ -29,7 +29,7 @@ app.use(helmet({
 // Enable CORS with proper configuration for cloud environment
 app.use(cors({
   origin: [
-    'http://localhost:4200',
+    'http://localhost:5200',
     'https://timesheet-aggregator-eind.onrender.com',
     'https://*.render.com',
     'https://*.amazonaws.com'
