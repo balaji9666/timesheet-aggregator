@@ -4,29 +4,19 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import workflowRoutes from './routes/workflow.routes';
+import compression from "compression";
+import path from 'path';
 
 // Load environment variables
 dotenv.config();
 
 // Create Express app
 const app: Express = express();
+const http = require('http').createServer(app);
 const port: number = parseInt(process.env.PORT || '443', 10);
 
-// Middleware
-app.use(helmet({
-  // Configure helmet for cloud environment
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://*.render.com", "https://*.amazonaws.com", "http://localhost:5200"]
-    }
-  }
-}));
-
 // Enable CORS with proper configuration for cloud environment
+app.use(compression());
 app.use(cors({
   origin: [
     'http://localhost:5200',
@@ -36,7 +26,6 @@ app.use(cors({
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
 }));
 
 app.use(morgan('dev')); // Logging
@@ -47,6 +36,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.set('trust proxy', 1);
 
 // Routes
+app.use(express.static(path.join(__dirname, '../client/dist/client/browser/')));
 app.use('/api/workflow', workflowRoutes);
 
 // Health check route
@@ -77,8 +67,22 @@ app.use((_req: Request, res: Response) => {
   });
 });
 
+const distPath = path.join(__dirname, '../client/dist/client/browser/index.html');
+console.log("distPath", distPath);
+//app.get('*', (req, res) => res.sendFile(distPath));
+app.use(function applyXFrame(req, res, next) {
+    res.set('X-Frame-Options', 'SAMEORIGIN');
+    next();
+});
+
 // Start server
-app.listen(port, () => {
-  console.log(`Workflow Timesheet Aggregator API is running on port ${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-}); 
+http.listen(port, () => console.log('Workflow Timesheet Aggregator running on port ' + port + '!'));
+
+
+process.on('unhandledRejection', (err:Error) => {
+  console.error(`Uncaught Exception: ${err.message}`);
+})
+
+process.on('uncaughtException', (err:Error) => {
+  console.error(`Uncaught Exception: ${err.message}`);
+})
